@@ -29,7 +29,7 @@ import base64
 import time
 
 
-PROHIBITED_WORDS = ['delete', 'drop', 'create', 'insert', 'update', 'alter', 'truncate', 'execute']
+PROHIBITED_WORDS = ['delete', 'drop', 'insert', 'alter', 'truncate', 'execute']
 
 
 class SqlExport(Model):
@@ -76,7 +76,8 @@ class SqlExport(Model):
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
             writer.writerow(header)
             for value in values:
-                writer.writerow(value)
+                value_encode = [x.encode('utf-8') for x in value if isinstance(x, unicode)]
+                writer.writerow(value_encode)
             output.getvalue()
             new_output = base64.b64encode(output.getvalue())
             output.close()
