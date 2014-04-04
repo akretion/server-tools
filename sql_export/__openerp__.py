@@ -29,11 +29,14 @@
     'description': 
     """
     Allow to execute sql query from openerp interface in order to export datas in csv files.
+    To edit or create a query, the user have to be in sql_query editor group.
+    To execute a query, the user or group of user have to be specified in the sql_export record.
+
     """,
     'author': 'Akretion',
     'website': 'http://www.akretion.com/',
     'depends': [
-        "base_setup",
+        "base",
     ], 
     'init_xml': [],
     'update_xml': [ 
