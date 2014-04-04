@@ -47,6 +47,11 @@ class SqlExport(Model):
                 return False
         return True
 
+    def _get_editor_group(self, cr, uid, *args):
+        gr_obj = self.pool.get('res.groups')
+        editors = gr_obj.search(cr, uid, [('name', '=', 'Sql Request Editor')])
+        return editors
+
 
     _columns = {
         'name': fields.char('Name', required=True),
@@ -56,28 +61,20 @@ class SqlExport(Model):
     }
 
 
-    _constraints = [(_check_query, 'The query you want make is not allowed : prohibited actions (Delete, drop...)', ['query'])]
+    _defaults = {
+        'group_ids' : _get_editor_group,
+    }
 
+    _constraints = [(_check_query, 'The query you want make is not allowed : prohibited actions (Delete, drop...)', ['query'])]
 
     def export_sql_query(self, cr, uid, ids, context=None):
         if not context:
             context = {}
         for obj in self.browse(cr, uid, ids, context=context):
-            cr.execute(obj.query)
-            results = cr.dictfetchall()
-            if results:
-                header = results[0].keys()
-                values = [x.values() for x in results]
-            else:
-                raise orm.except_orm(_("No data"),
-                                     _("The query did not return any data."))
             now = time.strftime('%Y-%m-%d',time.localtime())
             output = StringIO.StringIO()
-            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-            writer.writerow(header)
-            for value in values:
-                value_encode = [x.encode('utf-8') for x in value if isinstance(x, unicode)]
-                writer.writerow(value_encode)
+            query = "COPY (" + obj.query + ") TO STDOUT WITH CSV HEADER DELIMITER ';'"
+            cr.copy_expert(query, output)
             output.getvalue()
             new_output = base64.b64encode(output.getvalue())
             output.close()
