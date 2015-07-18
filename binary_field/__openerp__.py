@@ -71,7 +71,8 @@ Here is an example of field declaration
      'web',
  ],
  'data': [
-     'data/storage_configuration.xml',
+     'data/storage_config.xml',
+     'view/js.xml',
      'view/ir_model_view.xml',
      'view/storage_view.xml',
  ],

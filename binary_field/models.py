@@ -2,7 +2,7 @@
 ###############################################################################
 #
 #   Module for OpenERP
-#   Copyright (C) 2014 Akretion (http://www.akretion.com).
+#   Copyright (C) 2015 Akretion (http://www.akretion.com).
 #   @author Sébastien BEAU <sebastien.beau@akretion.com>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -20,13 +20,19 @@
 #
 ###############################################################################
 
-from openerp import fields, models
+from openerp import models, fields, api
 
 
-class IrModelFields(models.Model):
-    _inherit = 'ir.model.fields'
+_write_ori = models.Model._write
 
-    storage_id = fields.Many2one('storage.config', help=(
-        "Select a custom storage configuration. "
-        "If the field is empty the default one will be use")
-        )
+
+@api.multi
+def _write(self, vals):
+    for key in vals:
+        field = self._fields[key]
+        if hasattr(field, 'extra_type') and field.extra_type == 'binary':
+            vals[key] = self.env['storage.binary'].sudo().add(self, key, vals)
+    return _write_ori(self, vals)
+
+
+models.Model._write = _write

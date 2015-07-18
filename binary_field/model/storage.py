@@ -20,109 +20,72 @@
 #
 ###############################################################################
 
-from .fields import FileSystemStorage
-from openerp.osv import fields, orm
+from ..storage.filesystem import FileSystemStorage
+from openerp import fields, models, api
 
 
-class StorageConfiguration(orm.Model):
-    _name = 'storage.configuration'
-    _description = 'storage configuration'
-   
-    def _get_storage_map_class(self, cr, uid, context=None):
+class StorageConfig(models.Model):
+    _name = 'storage.config'
+    _description = 'Storage Configuration'
+
+    @api.model
+    def _get_storage_class(self):
         return {
-            'filesystem' : FileSystemStorage,
+            'filesystem': {
+                'class': FileSystemStorage,
+                'name': 'FileSystem',
             }
+        }
 
-    def _get_class(self, cr, uid, type, context=None):
-        map_class = self._get_storage_map_class(cr, uid, context=context)
-        return map_class[type]
+    @api.model
+    def _get_storage_type(self):
+        res = []
+        for key, vals in self._get_storage_class().items():
+            res.append((key, vals['name']))
+        return res
 
-    def _get_config(self, cr, uid, model_name, field_name, context=None):
-        field_obj = self.pool['ir.model.fields']
-        field_id = field_obj.search(cr, uid, [
-            ('model', '=', model_name),
-            ('name', '=', field_name),
-            ], context=context)
-        if not field_id:
-            raise orm.except_orm(
-                _('Dev Error'),
-                _('The field %s with do not exist on the model %s')
-                %(field, model))
-        else:
-            field_id = field_id[0]
-        field = field_obj.browse(cr, uid, field_id, context=context)
-        storage_id = field.storage_id.id
-        if not storage_id:
-            storage_id = self.search(cr, uid, [
-                ('is_default', '=', True),
-                ], context=context)
-            if storage_id:
-                storage_id = storage_id[0]
-            else:
-                raise orm.except_orm(
-                    _('User Error'),
-                    _('There is not default storage configuration, '
-                      'please add one'))
-        return self.read(cr, uid, storage_id, self._columns.keys(),
-                         context=context)
+    @api.multi
+    def get_adapter(self, field):
+        self.ensure_one()
+        return self._get_storage_class()[self.type]['class'](self, field)
 
-    def get_storage(self, cr, uid, field_name, record, context=None):
-        model_name = record._name
-        config = self._get_config(cr, uid, record._name, field_name)
-        storage_class = self._get_class(
-            cr, uid, config['type'], context=context)
-        return storage_class(cr, uid, model_name, field_name, record, config)
+    @api.one
+    def _remove_default(self):
+        storage = self.search([('is_default', '=', True)])
+        if storage != self:
+            storage.write({'is_default': False})
 
-    def _get_storage_type(self, cr, uid, context=None):
-        return [('filesystem', 'File System')]
-
-    def __get_storage_type(self, cr, uid, context=None):
-        return self._get_storage_type(cr, uid, context=context)
-
-    def _remove_default(self, cr, uid, context=None):
-        conf_id = self.search(cr, uid, [
-            ('is_default', '=', True),
-            ], context=context)
-        self.write(cr, uid, conf_id, {
-            'is_default': False,
-            }, context=context)
-
-    def create(self, cr, uid, vals, context=None):
-        if context is None:
-            context = {}
+    @api.model
+    def create(self, vals):
         if vals.get('is_default'):
-            self._remove_default(cr, uid, context=context)
-        return super(StorageConfiguration, self).\
-            create(cr, uid, vals, context=context)
-    
-    def write(self, cr, uid, ids, vals, context=None):
-        if context is None:
-            context = {}
-        if vals.get('is_default'):
-            self._remove_default(cr, uid, context=context)
-        return super(StorageConfiguration, self).\
-            write(cr, uid, ids, vals, context=context)
+            self._remove_default()
+        return super(StorageConfig, self).create(vals)
 
-    _columns = {
-        'name': fields.char('Name'),
-        'type': fields.selection(
-            __get_storage_type,
-            'Type',
-            help='Type of storage'),
-        'base_path': fields.char('Path'),
-        'is_default': fields.boolean(
-            'Is default',
-            help=('Tic that box in order to select '
-                 'the default storage configuration')),
-        'external_storage_server': fields.boolean(
-            'External Storage Server',
-            help=('Tic that box if you want to server the file with an '
-                 'external server. For example, if you choose the storage '
-                 'on File system, the binary file can be serve directly with '
-                 'nginx or apache...')),
-        'base_external_url': fields.char(
-            'Base external URL',
-            help=('When you use an external server for storing the binary '
-                  'you have to enter the base of the url where the binary can'
-                  ' be accesible.')),
-    }
+    @api.one
+    def write(self, vals):
+        if vals.get('is_default'):
+            self._remove_default()
+        return super(StorageConfig, self).write(vals)
+
+    name = fields.Char('Name')
+    type = fields.Selection(_get_storage_type)
+    base_path = fields.Char()
+    is_default = fields.Boolean(help=(
+        'Tic that box in order to select '
+        'the default storage configuration'))
+    store_by_field = fields.Boolean(help=(
+        'Tic that box in order to store binary per model and field. '
+        'This meant that the path of the storage will be the following'
+        'base_path/model_name/field_name/my_image'))
+    split_cache = fields.Boolean(help=(
+        'Tic that box in order to store the cache (image resize) in '
+        'a the directory "cache" instead of "binary"'))
+    external_storage_server = fields.Boolean(help=(
+        'Tic that box if you want to server the file with an '
+        'external server. For example, if you choose the storage '
+        'on File system, the binary file can be serve directly with '
+        'nginx or apache...'))
+    base_external_url = fields.Char(help=(
+        'When you use an external server for storing the binary '
+        'you have to enter the base of the url where the binary can '
+        'be accesible.'))

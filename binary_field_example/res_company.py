@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   Module for OpenERP 
+#   Module for OpenERP
 #   Copyright (C) 2013 Akretion (http://www.akretion.com).
 #   @author Sébastien BEAU <sebastien.beau@akretion.com>
 #
@@ -20,19 +20,20 @@
 #
 ###############################################################################
 
-from openerp.osv import fields, orm
+from openerp import models, fields
 
 
-class ResCompany(orm.Model):
+class ResCompany(models.Model):
     _inherit = 'res.company'
-    
-    _columns = {
-        'binary_test': fields.BinaryField('Test Binary'),
-        'image_test': fields.ImageField('Test Image'),
-        'image_test_resize': fields.ImageField(
-            'Test Image small',
-            resize_based_on='image_test',
-            height=64,
-            width=64,
-            ),
-    }
+
+    binary_test = fields.BinaryField('Test Binary')
+    binary_test_ori = fields.Binary('Test Binary Ori')
+#    image_test = fields.ImageField('Test Image')
+#    image_test_resize = fields.ImageField(
+#            'Test Image small',
+#            resize_based_on='image_test',
+#            height=64,
+#            width=64,
+#            )
+
+

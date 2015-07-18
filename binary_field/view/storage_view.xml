@@ -2,7 +2,7 @@
 <openerp>
     <data>
         <record id="view_storage_configuration_tree" model="ir.ui.view">
-            <field name="model">storage.configuration</field>
+            <field name="model">storage.config</field>
             <field name="arch" type="xml">
                 <tree string="Storage Configuration">
                     <field name="name"/>
@@ -12,7 +12,7 @@
         </record>
         
         <record id="view_storage_configuration_form" model="ir.ui.view">
-            <field name="model">storage.configuration</field>
+            <field name="model">storage.config</field>
             <field name="arch" type="xml">
                 <form string="Storage Configuration">
                     <field name="name"/>
@@ -25,7 +25,7 @@
         </record>
         
         <record id="view_storage_configuration_search" model="ir.ui.view">
-            <field name="model">storage.configuration</field>
+            <field name="model">storage.config</field>
             <field name="arch" type="xml">
                 <search string="Storage Configuration">
                     <field name="name"/>
@@ -36,7 +36,7 @@
         <record model="ir.actions.act_window" id="act_open_storage_configuration_view">
             <field name="name">Storage Configuration</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">storage.configuration</field>
+            <field name="res_model">storage.config</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_storage_configuration_search"/>

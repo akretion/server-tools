@@ -7,9 +7,10 @@
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
                 <field name="parent_id" position="after">
-                    <field name="binary_test"/>
-                    <field name="image_test" widget='image'/>
-                    <field name="image_test_resize" widget='image'/>
+                    <field name="binary_test" widget="binaryfield"/>
+                    <field name="binary_test_ori"/>
+                    <!--                    <field name="image_test" widget='image'/>
+                    <field name="image_test_resize" widget='image'/>-->
                 </field>
             </field>
         </record>

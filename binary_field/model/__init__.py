@@ -20,7 +20,6 @@
 #
 ###############################################################################
 
-from . import fields
 from . import storage
 from . import ir_model
 from . import binary

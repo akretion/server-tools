@@ -20,14 +20,22 @@
 #
 ###############################################################################
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class Storage(object):
 
-    def __init__(self, cr, uid, model_name, field_name, record, config):
-        self.cr = cr
-        self.uid = uid
-        self.pool = record._model.pool
-        self.field_name = field_name
-        self.model_name = model_name
-        self.config = config
-        self.external_storage_server = config['external_storage_server']
+    def __init__(self, storage, field):
+        self.storage = storage
+        self.field = field
+        self.base_path = storage.base_path or ''
+        self.base_external_url = storage.base_external_url or ''
+        self.dbname = storage._cr.dbname
+        self.store_by_field = storage.store_by_field
+        self.split_cache = storage.split_cache
+        self.field_name = field.name
+        self.model_name = field.model_id.model
+        self.is_cache = field.env[self.model_name]\
+            ._fields[self.field_name].is_cache
