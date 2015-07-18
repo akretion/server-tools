@@ -26,39 +26,24 @@ from openerp.tools.translate import _
 from openerp import tools
 
 
+class BinaryField(fields.Many2one):
+    type='binary'
 
-class BinaryField(fields.function):
+    def __init__(self, string=None, **kwargs):
+        super(BinaryField, self).__init__(
+            comodel_name='binary.binary', string=string, **kwargs)
 
-    def __init__(self, string, **kwargs):
-        """Init a BinaryField field
-        :params string: Name of the field
-        :type string: str
-        :params get_storage: Storage Class for processing the field
-                            by default use the Storage on filesystem
-        :type get_storage: :py:class`binary_field.Storage'
-        :params config: configuration used by the storage class
-        :type config: what you want it's depend of the Storage class
-                      implementation
-        """
-        new_kwargs = {
-            'type': 'binary',
-            'string': string,
-            'fnct_inv': self._fnct_write,
-            'multi': False,
-            }
-        new_kwargs.update(kwargs)
-        super(BinaryField, self).__init__(self._fnct_read, **new_kwargs)
+    def _get_file(self, record):
+        import pdb; pdb.set_trace()
+        return 'TODO'
 
-    # No postprocess are needed
-    # we already take care of bin_size option in the context
-    def postprocess(self, cr, uid, obj, field, value=None, context=None):
-        return value
+    def _set_file(self, record):
+        import pdb; pdb.set_trace()
+        return 'TODO'
 
-    def _prepare_binary_meta(self, cr, uid, field_name, res, context=None):
-        return {
-            '%s_uid' % field_name: res.get('binary_uid'),
-            '%s_file_size' % field_name: res.get('file_size'),
-            }
+    def setup(self, env):
+        self.compute = self._get_file
+        self.inverse = self._set_file
 
     def _fnct_write(self, obj, cr, uid, ids, field_name, value, args,
                     context=None):
@@ -203,4 +188,4 @@ class ImageField(BinaryField):
 
 
 fields.BinaryField = BinaryField
-fields.ImageField = ImageField
+#fields.ImageField = ImageField

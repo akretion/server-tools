@@ -20,7 +20,22 @@
 #
 ###############################################################################
 
-from . import model
-from . import storage
-from . import fields
+from openerp import models, fields
 
+
+class BinaryBinary(models):
+    _name = 'binary.binary'
+
+    def _get_url(self):
+        return 'todo'
+
+    def _get_file(self):
+        return 'todo'
+
+    def _set_file(self):
+        return True
+
+    uid = fields.Char()
+    size = fields.Float()
+    url = fields.Char(compute='_get_url')
+    data = fields.Binary(compute='_get_file', inverse='_set_file')

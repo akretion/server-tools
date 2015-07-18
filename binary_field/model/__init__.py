@@ -2,7 +2,7 @@
 ###############################################################################
 #
 #   Module for OpenERP
-#   Copyright (C) 2015 Akretion (http://www.akretion.com).
+#   Copyright (C) 2013 Akretion (http://www.akretion.com).
 #   @author Sébastien BEAU <sebastien.beau@akretion.com>
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 #
 ###############################################################################
 
-from . import model
-from . import storage
 from . import fields
-
+from . import storage
+from . import ir_model
+from . import binary
