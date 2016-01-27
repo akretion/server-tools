@@ -1,24 +1,9 @@
-# -*- encoding: utf-8 -*-
-##############################################################################
-#
-#    Copyright (C) 2015 AKRETION (<http://www.akretion.com>).
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
+# coding: utf-8
+# © 2015 @ Akretion
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
 from openerp import fields, models, api, _
-from openerp.exceptions import Warning
+from openerp.exceptions import Warning as UserError
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 from datetime import datetime, timedelta
 
@@ -34,13 +19,7 @@ class ResourceCalendar(models.Model):
         if isinstance(start_date, str):
             start_date = fields.Date.from_string(start_date)
         if not self.id:
-            model = self._context['params']['model']
-            obj_id = self._context['params']['id']
-            obj = self.env[model].browse(obj_id)
-            self = obj.company_id.calendar_id
-            if not self:
-                raise Warning(_('Error !'), _(
-                    'You need to define a calendar for the company !'))
+            self = self._update_self()
         dt_leave = self.get_leave_intervals(
             resource_id, start_datetime=None, end_datetime=None)
         worked_days = (
@@ -61,3 +40,24 @@ class ResourceCalendar(models.Model):
                     date.weekday()) in worked_days:
                 delay = delay - delta
         return date
+
+    @api.model
+    def _update_self(self):
+        if not self._context:
+            raise UserError(_(
+                "Impossible to guess the calendar to use\n"
+                "'context' variable is empty.\n"
+                "Developer tip: Consider to use inspect lib to get back "
+                "the context in ResourceCalendar._get_date()"))
+        model = self._context['params']['model']
+        obj_id = self._context['params']['id']
+        obj = self.env[model].browse(obj_id)
+        if 'company_id' in obj._fields.keys():
+            company = obj.company_id
+        elif self._uid:
+            company = self.env['res.users'].browse(self._uid).company_id
+        self = company.calendar_id
+        if not self:
+            raise UserError(_(
+                'You need to define a calendar for the company !'))
+        return self
