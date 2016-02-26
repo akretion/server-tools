@@ -22,12 +22,13 @@ env:
   - TRANSIFEX="1"
   - TESTS="1" ODOO_REPO="odoo/odoo"
   - TESTS="1" ODOO_REPO="OCA/OCB"
-  - UNIT_TEST="1" 
+  - UNIT_TEST="1"
 
 virtualenv:
   system_site_packages: true
 
 install:
+  - git clone https://github.com/akretion/server-tools.git ${HOME}/server-tools-attachm -b 8-attachm-meta
   - git clone https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
   - travis_install_nightly
