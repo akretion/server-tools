@@ -33,14 +33,18 @@ class IrAttachmentMetadata(models.Model):
         help="The file type determines an import method to be used "
         "to parse and transform data before their import in ERP")
 
-    @api.depends('datas', 'external_hash')
+    @api.depends('datas')
     def _compute_hash(self):
         for attachment in self:
             if attachment.datas:
                 attachment.internal_hash = hashlib.md5(
                     b64decode(attachment.datas)).hexdigest()
+
+    @api.constrains('internal_hash', 'external_hash')
+    def _check_external_hash(self):
+        for attachment in self:
             if attachment.external_hash and\
-               attachment.internal_hash != attachment.external_hash:
+                    attachment.internal_hash != attachment.external_hash:
                 raise UserError(
                     _("File corrupted: Something was wrong with "
                       "the retrieved file, please relaunch the task."))
@@ -51,3 +55,4 @@ class IrAttachmentMetadata(models.Model):
         The file is just added as an attachement
         """
         return [('basic_import', 'Basic import')]
+
