@@ -2,12 +2,14 @@
 #    Copyright (C) 2014 initOS GmbH & Co. KG (<http://www.initos.com>).
 #   @author: Joel Grand-Guillaume @ Camptocamp SA
 # @ 2015 Valentin CHEMIERE @ Akretion
+# © 2016 @author Mourad EL HADJ MIMOUNE <mourad.elhadj.mimoune@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
+import hashlib
+from base64 import b64decode
 
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
-import hashlib
-from base64 import b64decode
 
 
 class IrAttachmentMetadata(models.Model):
