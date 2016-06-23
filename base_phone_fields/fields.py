@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
-from openerp import fields, models
+from openerp import api, fields, models
 from operator import attrgetter
 
 
@@ -44,26 +44,45 @@ class Phone(fields.Char):
 def convert_phone_field(value, country):
     return value + country.code
 
+def convert_all_phone_fields(self, vals, fields_to_convert):
+    loc_vals = vals.copy()
+    for field in fields_to_convert:
+        country_key = self._fields[field].country_field
+        if country_key in loc_vals:
+            country = self.env['res.country'].browse(vals[country_key])
+        else:
+            country = self[country_key]
+        loc_vals[field] = convert_phone_field(loc_vals[field], country)
+    return loc_vals
 
-original_write = models.Model.write
-
-def write(self, vals):
+def get_phone_fields(self, vals):
     fields_to_convert = []
     for key in vals:
         if isinstance(self._fields[key], Phone):
             fields_to_convert.append(key)
+    return fields_to_convert
+
+original_write = models.Model.write
+original_create = models.Model.create
+
+@api.multi
+def write(self, vals):
+    fields_to_convert = get_phone_fields(self, vals)
     if fields_to_convert:
         for record in self:
-            loc_vals = vals.copy()
-            for field in fields_to_convert:
-                country_key = self._fields[field].country_field
-                if country_key in loc_vals:
-                    country = self.env['res.country'].browse(vals[country_key])
-                else:
-                    country = record[country_key]
-                loc_vals[field] = convert_phone_field(loc_vals[field], country)
+            loc_vals = convert_all_phone_fields(record, vals, fields_to_convert)
             original_write(record, loc_vals)
         return True
     else:
         return original_write(self, vals)
+
+@api.model
+@api.returns('self', lambda value: value.id)
+def create(self, vals):
+    fields_to_convert = get_phone_fields(self, vals)
+    if fields_to_convert:
+        vals = convert_all_phone_fields(self, vals, fields_to_convert)
+    return original_create(self, vals)
+
 models.Model.write = write
+models.Model.create = create
