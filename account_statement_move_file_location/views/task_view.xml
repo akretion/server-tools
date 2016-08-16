@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- INHERITED VIEW FOR THE OBJECT : file_document -->
+
+        <record id="journal_task_form_view" model="ir.ui.view">
+            <field name="model">external.file.task</field>
+            <field name="inherit_id" ref="external_file_location.view_task_form" />
+            <field name="arch" type="xml">
+                <data>
+                    <field name="file_type" position="after">
+                        <field name="journal_id"
+                               attrs="{'invisible':[('file_type', 'not in', ('account_move_import', 'account_statement_import'))],
+                                       'required':[('file_type', 'in', ('account_move_import', 'account_statement_import'))]}"/>
+                    </field>
+                </data>
+            </field>
+        </record>
+
+    </data>
+</openerp>
