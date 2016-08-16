@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <record model="ir.ui.view" id="view_fetchmail_condition_journal_form">
+        <field name="model">fetchmail.attachment.condition</field>
+        <field name="inherit_id" ref="file_email.view_fetchmail_attachment_condition_form"/>
+        <field name="arch" type="xml">
+            <field name="file_type" position="after">
+                <field name="journal_id" attrs="{'required': [('file_type', 'in', ('account_move_import', 'account_statement_import'))]}"/>
+            </field>
+        </field>
+    </record> 
+
+  </data>
+</openerp>
