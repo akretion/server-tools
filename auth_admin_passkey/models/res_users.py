@@ -54,7 +54,7 @@ class ResUsers(models.Model):
                 'body_html': '<pre>%s</pre>' % body})
             mail.send(auto_commit=True)
 
-    @api.cr
+    @api.model
     def _send_email_same_password(self, login_user):
         """ Send a email to the admin user to inform that another user has the
  same password as him."""
@@ -97,7 +97,7 @@ class ResUsers(models.Model):
                 if not same_password:
                     self._send_email_passkey(cr, user_id, user_agent_env)
                 else:
-                    self._send_email_same_password(cr, login)
+                    self._send_email_same_password(cr, user_id, login)
             except exceptions.AccessDenied:
                 pass
             finally:
