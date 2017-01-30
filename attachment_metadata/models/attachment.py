@@ -2,12 +2,14 @@
 #    Copyright (C) 2014 initOS GmbH & Co. KG (<http://www.initos.com>).
 #   @author: Joel Grand-Guillaume @ Camptocamp SA
 # @ 2015 Valentin CHEMIERE @ Akretion
+# © 2016 @author Mourad EL HADJ MIMOUNE <mourad.elhadj.mimoune@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
+import hashlib
+from base64 import b64decode
 
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
-import hashlib
-from base64 import b64decode
 
 
 class IrAttachmentMetadata(models.Model):
@@ -31,14 +33,18 @@ class IrAttachmentMetadata(models.Model):
         help="The file type determines an import method to be used "
         "to parse and transform data before their import in ERP")
 
-    @api.depends('datas', 'external_hash')
+    @api.depends('datas')
     def _compute_hash(self):
         for attachment in self:
             if attachment.datas:
                 attachment.internal_hash = hashlib.md5(
                     b64decode(attachment.datas)).hexdigest()
+
+    @api.constrains('internal_hash', 'external_hash')
+    def _check_external_hash(self):
+        for attachment in self:
             if attachment.external_hash and\
-               attachment.internal_hash != attachment.external_hash:
+                    attachment.internal_hash != attachment.external_hash:
                 raise UserError(
                     _("File corrupted: Something was wrong with "
                       "the retrieved file, please relaunch the task."))
@@ -49,3 +55,4 @@ class IrAttachmentMetadata(models.Model):
         The file is just added as an attachement
         """
         return [('basic_import', 'Basic import')]
+
