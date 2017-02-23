@@ -3,12 +3,10 @@
 # @author Sylvain LE GAL (https://twitter.com/legalsylvain)
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
 
-import datetime
-
 from openerp import SUPERUSER_ID
 from openerp import registry
 from openerp import exceptions
-from openerp import models, api
+from openerp import api, fields, models
 from openerp.tools.translate import _
 from openerp.tools.safe_eval import safe_eval
 
@@ -50,7 +48,7 @@ class ResUsers(models.Model):
                     """\n\nTechnicals informations belows : \n\n"""
                     """- Login date : %s\n\n""")) % (
                         login_user.login,
-                        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                        fields.Datetime.now())
             for k, v in user_agent_env.iteritems():
                 body += ("- %s : %s\n\n") % (k, v)
             mail_obj.sudo().create({
