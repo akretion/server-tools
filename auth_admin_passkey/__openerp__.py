@@ -4,7 +4,7 @@
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
 
 {
-    'name': 'Authentification - Admin Passkey',
+    'name': 'Authentication - Admin Passkey',
     'version': '8.0.2.1.1',
     'category': 'base',
     'author': "GRAP,Odoo Community Association (OCA)",
@@ -17,12 +17,6 @@
         'data/ir_config_parameter.xml',
         'view/res_config_view.xml',
     ],
-    'demo': [],
-    'js': [],
-    'css': [],
-    'qweb': [],
-    'images': [],
-    'post_load': '',
     'application': False,
     'installable': True,
     'auto_install': False,
