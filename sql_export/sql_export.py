@@ -60,8 +60,3 @@ class SqlExport(models.Model):
             'context': self._context,
             'nodestroy': True,
         }
-
-    @api.model
-    def create(self, vals):
-        print vals
-        return super(SqlExport, self).create(vals)

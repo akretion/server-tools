@@ -20,7 +20,6 @@
 ##############################################################################
 import base64
 from openerp.tests.common import TransactionCase
-from openerp import exceptions
 from openerp.exceptions import Warning as UserError
 
 
@@ -60,7 +59,6 @@ class TestExportSqlQuery(TransactionCase):
                     'query': query})
                 sql_export.button_clean_check_request()
 
-
     def test_authorized_queries(self):
         authorized_queries = [
             "SELECT create_date FROM res_partner",
@@ -71,5 +69,6 @@ class TestExportSqlQuery(TransactionCase):
                 'name': 'test_authorized',
                 'query': query})
             sql_export.button_clean_check_request()
-            self.assertEqual(sql_export.state, 'sql_valid',
+            self.assertEqual(
+                sql_export.state, 'sql_valid',
                 "%s is a valid request" % (query))
