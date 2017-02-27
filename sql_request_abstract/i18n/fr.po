@@ -73,7 +73,7 @@ msgid "Last Updated on"
 msgstr "Dernière mise à jour le"
 
 #. module: sql_request_abstract
-#: model:res.groups,name:sql_request_abstract.group_sql_abstract_mixin_manager
+#: model:res.groups,name:sql_request_abstract.group_sql_request_manager
 msgid "Manager"
 msgstr "Responsable"
 
@@ -134,7 +134,7 @@ msgid "Unimplemented mode : '%s'"
 msgstr "Mode non implémenté : '%s'"
 
 #. module: sql_request_abstract
-#: model:res.groups,name:sql_request_abstract.group_sql_abstract_mixin_user
+#: model:res.groups,name:sql_request_abstract.group_sql_request_user
 msgid "User"
 msgstr "Utilisateur"
 

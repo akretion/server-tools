@@ -233,7 +233,8 @@ class SQLRequestMixin(models.Model):
             self.env.cr.execute(query)
             self._hook_executed_request()
         except ProgrammingError as e:
-            raise UserError(_("The SQL query is not valid:\n\n %s") % e.message)
+            raise UserError(
+                _("The SQL query is not valid:\n\n %s") % e.message)
         finally:
             self._rollback_savepoint(rollback_name)
 

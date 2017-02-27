@@ -22,8 +22,7 @@
 import datetime
 from lxml import etree
 
-from openerp import models, fields, api
-from openerp.osv import orm
+from openerp import models, fields, api, osv
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
@@ -56,7 +55,7 @@ class SqlFileWizard(models.TransientModel):
                     kwargs = {'name': "%s" % field.name}
                     toupdate_fields.append(field.name)
                     view_field = etree.SubElement(group, 'field', **kwargs)
-                    orm.setup_modifiers(
+                    osv.orm.setup_modifiers(
                         view_field, self.fields_get(field.name))
 
                 res['fields'].update(self.fields_get(toupdate_fields))
