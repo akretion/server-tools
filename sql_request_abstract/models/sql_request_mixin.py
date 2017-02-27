@@ -229,14 +229,16 @@ class SQLRequestMixin(models.Model):
         self.ensure_one()
         query = self._prepare_request_check_execution()
         rollback_name = self._create_savepoint()
+        res = False
         try:
             self.env.cr.execute(query)
-            self._hook_executed_request()
+            res = self._hook_executed_request()
         except ProgrammingError as e:
             raise UserError(
                 _("The SQL query is not valid:\n\n %s") % e.message)
         finally:
             self._rollback_savepoint(rollback_name)
+        return res
 
     @api.multi
     def _prepare_request_check_execution(self):
@@ -250,4 +252,4 @@ class SQLRequestMixin(models.Model):
         been executed, before the rollback.
         """
         self.ensure_one()
-        pass
+        return False
