@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
-    <data>
+<odoo>
+    <data noupdate="1">
         
         <record model="ir.cron" id="cronjob_run_exchange_tasks">
             <field name='name'>Run file exchange tasks</field>
@@ -15,4 +15,4 @@
         </record>
 
     </data>
-</openerp>
+</odoo>

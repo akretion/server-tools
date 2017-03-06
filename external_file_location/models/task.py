@@ -2,14 +2,14 @@
 # @ 2015 Valentin CHEMIERE @ Akretion
 #  © @author Mourad EL HADJ MIMOUNE <mourad.elhadj.mimoune@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-
-from openerp import models, fields, api
-import openerp
-from openerp import tools
 from base64 import b64encode
 import os
 import datetime
 import logging
+import odoo
+from odoo import api, fields, models
+from odoo import tools
+
 
 _logger = logging.getLogger(__name__)
 
@@ -157,7 +157,7 @@ class Task(models.Model):
                                           wildcard=self.filename or '',
                                           files_only=True):
                 with api.Environment.manage():
-                    with openerp.registry(
+                    with odoo.registry(
                             self.env.cr.dbname).cursor() as new_cr:
                         new_env = api.Environment(new_cr, self.env.uid,
                                                   self.env.context)
