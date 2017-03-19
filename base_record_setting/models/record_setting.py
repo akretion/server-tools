@@ -39,6 +39,9 @@ class RecordSettingRule(models.Model):
         string='Implied Model',
         related='field_id.relation',
         help="")
+    # src_model_id = fields.Many2one(
+    #     comodel_name='ir.model', string='Model', compute='_compute_src_model',
+    #     help="")
     readonly = fields.Boolean(
         help="If checked ensure than record can't be updated by user "
              "(only by inserted data)")

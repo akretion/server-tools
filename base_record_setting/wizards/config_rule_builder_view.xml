@@ -8,12 +8,13 @@
             <form>
               <sheet>
                 <h2>
-                    <!-- <field name="src_model_id" readonly="1"/><br/> -->
+                    <field name="src_model_id" readonly="1" invisible="1"/><br/>
                     <field name="name" readonly="1"/>
                 </h2>
-                <field name="config_ids">
+                <field name="config_ids" context="{'default_model_id': src_model_id}">
                     <tree editable="bottom">
-                        <!-- <field name="implied_record_id"/> -->
+                        <field name="sequence" widget="handle"/>
+                        <field name="implied_record"/>
                         <field name="model_id" invisible="1"/>
                         <field name="field_id"/>
                         <field name="value"/>
@@ -27,7 +28,7 @@
     </record>
 
     <record id="config_rule_builder_action" model="ir.actions.act_window">
-        <field name="name">Configuration Rule Builder</field>
+        <field name="name">Configuration Builder</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">config.rule.builder</field>
         <field name="view_mode">form</field>
