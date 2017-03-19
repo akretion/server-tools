@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="config_rule_builder_form_view" model="ir.ui.view">
+        <field name="model">config.rule.builder</field>
+        <field name="arch" type="xml">
+            <form>
+              <sheet>
+                <h2>
+                    <!-- <field name="src_model_id" readonly="1"/><br/> -->
+                    <field name="name" readonly="1"/>
+                </h2>
+                <field name="config_ids">
+                    <tree editable="bottom">
+                        <!-- <field name="implied_record_id"/> -->
+                        <field name="model_id" invisible="1"/>
+                        <field name="field_id"/>
+                        <field name="value"/>
+                        <field name="domain" placeholer="[('', '', '')]"/>
+                        <field name="readonly"/>
+                    </tree>
+                </field>
+              </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="config_rule_builder_action" model="ir.actions.act_window">
+        <field name="name">Configuration Rule Builder</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">config.rule.builder</field>
+        <field name="view_mode">form</field>
+        <field name="target">fullscreen</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>

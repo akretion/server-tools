@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="record_setting_rule_tree" model="ir.ui.view">
+        <field name="model">record.setting.rule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="field_id"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="record_setting_rule_form_view" model="ir.ui.view">
+        <field name="model">record.setting.rule</field>
+        <field name="arch" type="xml">
+            <form>
+              <header>
+                <button name="%(base_record_setting.config_rule_builder_action)d"
+                        string="Configuration" type="action"
+                        attrs="{'invisible': [('config', '=', False)]}"
+                        help="Update Configuration"/>
+                <button name="%(base_record_setting.config_rule_builder_action)d"
+                         class="btn-primary" string="Configuration" type="action"
+                         attrs="{'invisible': [('config', '!=', False)]}"
+                         help="Update Configuration"/>
+              </header>
+              <sheet>
+                    <h2>
+                        <field name="name" placeholder="Name"/>
+                    </h2>
+                    <group col="4">
+                        <field name="model_id"
+                               attrs="{'readonly': [('readonly', '=', True)]}"/>
+                        <field name="active"/>
+                        <field name="field_id"
+                               attrs="{'readonly': [('readonly', '=', True)]}"/>
+                        <field name="sequence"/>
+                        <field name="implied_model" readonly="1"/>
+                        <field name="company_id" groups="base.group_multi_company"       options="{'no_create': True}"/>
+                        <field name="readonly" invisible="1"/>
+                    </group>
+                    <group col="4">
+                        <separator string="Configuration"/>
+                        <field name="config" colspan="4" nolabel="1"
+                               placeholder="{19: {'pricelist_id': {'value': 5, 'domain': False, 'readonly': True}}}"/>
+                    </group>
+              </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="record_setting_rule_action" model="ir.actions.act_window">
+        <field name="name">Record Setting Rules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">record.setting.rule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem action="record_setting_rule_action"
+              id="menu_record_setting_rule_action"
+              parent="base.menu_automation" sequence="10"/>
+
+</odoo>
