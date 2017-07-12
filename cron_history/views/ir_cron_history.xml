@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+        <record id="view_cron_history_tree" model="ir.ui.view">
+            <field name="model">ir.cron.history</field>
+            <field name="arch" type="xml">
+                <tree string="Cron History">
+                    <field name="cron_id"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="duration"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_cron_history" model="ir.actions.act_window">
+            <field name="name">Scheduled Action History</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ir.cron.history</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_ir_cron_history" 
+            parent="base.menu_automation"
+            sequence="11"
+            action="action_cron_history"/>
+
+</odoo>
