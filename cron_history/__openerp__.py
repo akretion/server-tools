@@ -30,7 +30,7 @@
     "application": False,
     "installable": True,
     "depends": [
-        "base",
+        "connector",
     ],
     "data": [
         'views/ir_cron.xml',
