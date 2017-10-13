@@ -13,28 +13,30 @@ class ResUsers(models.Model):
     auth_log_ids = fields.One2many(
         'res.users.auth.log', 'user_id', string='Authentication Logs')
 
-    def authenticate(self, db, login, password, user_agent_env):
-        user_id = super(ResUsers, self).authenticate(
-            db, login, password, user_agent_env)
-        cr = registry(db).cursor()
-        try:
-            vals = {
-                'login': login,
-                'result': 'failure',
-                'date': fields.Datetime.now(),
-                }
+    def _login(self, db, login, password):
+        user_id = super(ResUsers, self)._login(db, login, password)
+        with registry(db).cursor() as cr:
             if user_id:
-                vals.update({'user_id': user_id, 'result': 'success'})
-            elif login:
-                user_ids = self.pool['res.users'].search(
-                    cr, SUPERUSER_ID, [('login', '=', login)])
-                if user_ids:
-                    vals['user_id'] = user_ids[0]
-            self.pool['res.users.auth.log'].create(
-                cr, SUPERUSER_ID, vals, {'authenticate_create': True})
-            cr.commit()
-        except Exception, e:
-            logger.warning('Failed to create auth log. Error: %s', e)
-        finally:
-            cr.close()
+                result = 'success'
+            else:
+                user_id = None  # To write a null value, psycopg2 wants None
+                result = 'failure'
+                cr.execute(
+                    "SELECT id FROM res_users WHERE login=%s", (login, ))
+                user_select = cr.fetchall()
+                if user_select:
+                    user_id = user_select[0][0]
+
+            cr.execute("""
+                INSERT INTO res_users_auth_log (
+                    create_uid,
+                    create_date,
+                    date,
+                    login,
+                    result,
+                    user_id
+                    ) VALUES (
+                    %s, NOW() AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC',
+                    %s, %s, %s)""", (SUPERUSER_ID, login, result, user_id))
+            logger.info('Auth log created for login %s type %s', login, result)
         return user_id
