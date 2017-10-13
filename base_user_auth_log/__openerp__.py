@@ -15,6 +15,7 @@
         'security/ir.model.access.csv',
         'views/res_users_auth_log.xml',
         'views/res_users.xml',
+        'data/ir_cron.xml',
     ],
     'installable': True,
 }

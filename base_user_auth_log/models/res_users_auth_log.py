@@ -4,6 +4,9 @@
 
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning as UserError
+from datetime import datetime, timedelta
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ResUsersAuthLog(models.Model):
@@ -32,3 +35,10 @@ class ResUsersAuthLog(models.Model):
     @api.multi
     def write(self, vals):
         raise UserError(_("You cannot modify an authentication log."))
+
+    @api.model
+    def _purge_old_auth_logs(self):
+        expiry_date = datetime.today() - timedelta(days=365)
+        self._cr.execute(
+            "DELETE FROM res_users_auth_log WHERE date <= %s", (expiry_date, ))
+        logger.info('Auth logs older than %s have been purged', expiry_date)
