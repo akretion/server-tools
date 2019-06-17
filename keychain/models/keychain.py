@@ -5,6 +5,7 @@ from functools import wraps
 
 import logging
 import json
+import types
 
 from openerp import models, fields, api
 from openerp.exceptions import ValidationError
@@ -13,6 +14,10 @@ from openerp.tools.translate import _
 
 try:
     from openerp.addons.server_environment import serv_config
+    # if serv_config is a file because server_environment is present
+    # but uninstalled, do as if did not exist at all...
+    if isinstance(serv_config, types.ModuleType):
+        serv_config = None
 except ImportError:  # server_environment not installed or configured
     serv_config = None
 
