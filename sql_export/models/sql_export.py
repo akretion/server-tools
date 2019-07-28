@@ -34,9 +34,12 @@ class SqlExport(models.Model):
     _check_execution_enabled = False
 
     copy_options = fields.Char(
-        string='Copy Options', required=True,
+        string='Copy Options', required=False,
         default="CSV HEADER DELIMITER ';'")
-
+    file_format = fields.Selection(
+        [('csv', 'CSV')],
+        default='csv',
+        required=True)
     field_ids = fields.Many2many(
         'ir.model.fields',
         'fields_sqlquery_rel',
@@ -68,3 +71,20 @@ class SqlExport(models.Model):
             'context': self._context,
             'nodestroy': True,
         }
+
+    @api.multi
+    def _get_file_extension(self):
+        self.ensure_one()
+        if self.file_format == 'csv':
+            return 'csv'
+
+    @api.multi
+    def csv_get_datas_from_query(self, variable_dict):
+        self.ensure_one()
+        # Execute Request
+        res = self._execute_sql_request(
+            params=variable_dict, mode='stdout',
+            copy_options=self.copy_options)
+        if self.encoding:
+            res = res.encode(self.encoding)
+        return res
