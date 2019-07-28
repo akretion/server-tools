@@ -1,27 +1,6 @@
-# -*- coding: utf-8 -*-
-###############################################################################
-#
-#   account_statement_repository for OpenERP
-#   Copyright (C) 2013 Akretion (http://www.akretion.com). All Rights Reserved
-#   @author Benoît GUILLOT <benoit.guillot@akretion.com>
-#
-#   This program is free software: you can redistribute it and/or modify
-#   it under the terms of the GNU Affero General Public License as
-#   published by the Free Software Foundation, either version 3 of the
-#   License, or (at your option) any later version.
-#
-#   This program is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#   GNU Affero General Public License for more details.
-#
-#   You should have received a copy of the GNU Affero General Public License
-#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-###############################################################################
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
 
-from openerp import models, api, fields
-import os
+from openerp import fields, models
 
 
 class IrAttachmentMetadata(models.Model):
@@ -36,11 +15,9 @@ class IrAttachmentMetadata(models.Model):
         'account.journal'
         )
 
-    @api.multi
     def _run(self):
         self.ensure_one()
         super(IrAttachmentMetadata, self)._run()
-        attach_obj = self.pool['ir.attachment']
         if self.file_type == 'account_move_import':
             vals = {
                 'input_statement': self.datas,
@@ -53,7 +30,6 @@ class IrAttachmentMetadata(models.Model):
             import_wizard.with_context(
                 default_attachement_metadata_id=self.id).import_statement()
         elif self.file_type == 'account_statement_import':
-            journal_id = self.env.context.get('journal_id', False)
             import_wizard_obj = self.env['account.bank.statement.import']
             vals = {
                 'data_file': self.datas,
