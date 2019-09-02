@@ -165,44 +165,51 @@ class SQLRequestMixin(models.AbstractModel):
         else:
             raise UserError(_("Unimplemented mode : '%s'" % mode))
 
+        # helper usefull for sql_export_external_database module where
+        # we want to query another database.
+        query_cr = self._get_cr_for_query()
         if rollback:
-            rollback_name = self._create_savepoint()
+            rollback_name = self._create_savepoint(query_cr)
         try:
             if mode == 'stdout':
                 output = StringIO.StringIO()
-                self.env.cr.copy_expert(query, output)
+                query_cr.copy_expert(query, output)
                 output.getvalue()
                 res = base64.b64encode(output.getvalue())
                 output.close()
             else:
-                self.env.cr.execute(query)
+                query_cr.execute(query)
                 if mode == 'fetchall':
-                    res = self.env.cr.fetchall()
+                    res = query_cr.fetchall()
                     if header:
                         colnames = [
                             desc[0] for desc in self.env.cr.description
                         ]
                         res.insert(0, colnames)
                 elif mode == 'fetchone':
-                    res = self.env.cr.fetchone()
+                    res = query_cr.fetchone()
         finally:
-            self._rollback_savepoint(rollback_name)
-
+            self._rollback_savepoint(rollback_name, query_cr)
         return res
+
+    @api.multi
+    def _get_cr_for_query(self):
+        self.ensure_one()
+        return self.env.cr
 
     # Private Section
     @api.model
-    def _create_savepoint(self):
+    def _create_savepoint(self, cr):
         rollback_name = '%s_%s' % (
             self._name.replace('.', '_'), uuid.uuid1().hex)
         req = "SAVEPOINT %s" % (rollback_name)
-        self.env.cr.execute(req)
+        cr.execute(req)
         return rollback_name
 
     @api.model
-    def _rollback_savepoint(self, rollback_name):
+    def _rollback_savepoint(self, rollback_name, cr):
         req = "ROLLBACK TO SAVEPOINT %s" % (rollback_name)
-        self.env.cr.execute(req)
+        cr.execute(req)
 
     @api.model
     def _check_materialized_view_available(self):
