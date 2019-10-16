@@ -80,6 +80,7 @@ class Shell(Command):
                     local_vars['env'] = env
                     local_vars['self'] = env.user
                     self.console(local_vars)
+                    cr.rollback()
             else:
                 self.console(local_vars)
 
