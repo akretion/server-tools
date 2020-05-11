@@ -99,12 +99,10 @@ class AttachmentQueue(models.Model):
                         attach.env.cr.commit()
         return True
 
-    @api.multi
     def _run(self):
         self.ensure_one()
         _logger.info("Start to process attachment queue id %d", self.id)
 
-    @api.multi
     def set_done(self):
         """
         Manually set to done
