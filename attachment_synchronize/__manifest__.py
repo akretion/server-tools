@@ -8,6 +8,7 @@
     "version": "12.0.1.0.0",
     "author": "Akretion,Odoo Community Association (OCA)",
     "website": "https://github.com/oca/server-tools",
+    "maintainers": ["florian-dacosta", "sebastienbeau", "bealdav"],
     "license": "AGPL-3",
     "category": "Generic Modules",
     "depends": [
