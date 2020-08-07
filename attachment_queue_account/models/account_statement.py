@@ -6,6 +6,6 @@ from openerp import fields, models
 class AccountBankStatement(models.Model):
     _inherit = "account.bank.statement"
 
-    attachement_metadata_id = fields.Many2one(
-        'ir.attachment.metadata'
+    attachement_queue_id = fields.Many2one(
+        'attachment.queue'
     )

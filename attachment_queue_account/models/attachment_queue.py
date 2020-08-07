@@ -3,8 +3,8 @@
 from openerp import fields, models
 
 
-class IrAttachmentMetadata(models.Model):
-    _inherit = "ir.attachment.metadata"
+class AttachmentQueue(models.Model):
+    _inherit = "attachment.queue"
 
     file_type = fields.Selection(
         selection_add=[
@@ -13,11 +13,11 @@ class IrAttachmentMetadata(models.Model):
         ])
     journal_id = fields.Many2one(
         'account.journal'
-        )
+    )
 
     def _run(self):
         self.ensure_one()
-        super(IrAttachmentMetadata, self)._run()
+        super(AttachmentQueue, self)._run()
         if self.file_type == 'account_move_import':
             vals = {
                 'input_statement': self.datas,
@@ -28,7 +28,7 @@ class IrAttachmentMetadata(models.Model):
                 active_model='account.journal',
                 active_ids=[self.journal_id.id]).create(vals)
             import_wizard.with_context(
-                default_attachement_metadata_id=self.id).import_statement()
+                default_attachement_queue_id=self.id).import_statement()
         elif self.file_type == 'account_statement_import':
             import_wizard_obj = self.env['account.bank.statement.import']
             vals = {
@@ -37,4 +37,4 @@ class IrAttachmentMetadata(models.Model):
             import_wizard = import_wizard_obj.create(vals)
             import_wizard.with_context(
                 journal_id=self.journal_id.id,
-                default_attachement_metadata_id=self.id).import_file()
+                default_attachement_queue_id=self.id).import_file()

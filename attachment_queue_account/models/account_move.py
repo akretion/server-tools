@@ -6,7 +6,7 @@ from openerp import fields, models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    attachement_metadata_id = fields.Many2one(
-        'ir.attachment.metadata'
+    attachement_queue_id = fields.Many2one(
+        'attachment.queue'
         )
 
