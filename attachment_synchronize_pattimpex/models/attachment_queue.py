@@ -3,35 +3,18 @@
 
 import os
 from odoo import api, models, fields
+from .common import make_safe_filename
 
 
 class AttachmentQueue(models.Model):
     _inherit = "attachment.queue"
 
-    task_id = fields.Many2one("attachment.synchronize.task", string="Task")
-    method_type = fields.Selection(related="task_id.method_type")
-    storage_backend_id = fields.Many2one(
-        "storage.backend",
-        string="Storage Backend",
-        related="task_id.backend_id",
-        store=True,
-    )
-    file_type = fields.Selection(
-        selection_add=[("export_pattimpex", "Export File using patterns (External location)")]
-    )
     export_id = fields.Many2one("ir.exports")
-    pattimpex_id = fields.Many2one("patterned.import.export", string="Patterned Import/Export")
+    pattimpex_id = fields.Many2one(
+        "patterned.import.export", string="Patterned Import/Export"
+    )
 
     # Export part
-
-    def _run_export_pattimpex(self):
-        path = os.path.join(self.task_id.filepath, self.datas_fname)
-        self.storage_backend_id._add_b64_data(path, self.datas)
-
-    def _run(self):
-        super()._run()
-        if self.file_type == "export_pattimpex":
-            self._run_export_pattimpex()
 
     @api.onchange("task_id")
     def onchange_task_id(self):
@@ -42,9 +25,11 @@ class AttachmentQueue(models.Model):
     # Import part
 
     def import_using_pattern(self):
-        wizard = self.env["import.pattern.wizard"].create({
-            "ir_exports_id": self.export_id.id,
-            "import_file": self.datas,
-            "name": self.name
-        })
+        wizard = self.env["import.pattern.wizard"].create(
+            {
+                "ir_exports_id": self.export_id.id,
+                "import_file": self.datas,
+                "name": make_safe_filename(self.name),
+            }
+        )
         self.pattimpex_id = wizard.action_launch_import()

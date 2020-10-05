@@ -1,41 +1,32 @@
 # Copyright 2020 Akretion (http://www.akretion.com).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import mock
-from .common import SyncCommon
-from odoo.tools import mute_logger
+import openpyxl
+
+from odoo.addons.pattern_import_export_xlsx.tests.test_pattern_export import (
+    TestPatternExportExcel,
+)
+from .common import SyncPattimpexCommon
 
 
-def raising_side_effect(*args, **kwargs):
-    raise Exception("Boom")
-
-
-class TestExport(SyncCommon):
+class TestExport(SyncPattimpexCommon, TestPatternExportExcel):
     def setUp(self):
         super().setUp()
-        self.task = self.env.ref("attachment_synchronize.export_to_filestore")
-        self.attachment = self.env["attachment.queue"].create(
-            {
-                "name": "foo.txt",
-                "datas_fname": "foo.txt",
-                "task_id": self.task.id,
-                "file_type": "export",
-                "datas": self.filedata,
-            }
-        )
+        self.user = self.env.ref("base.user_admin")
 
-    def test_export(self):
-        self.attachment.run()
+    def test_export_end_to_end(self):
+        """
+        Test that we get the correct result from the first step to the last one
+        with resulting XLSX
+        """
+        self.task_export.run_export_pattimpex()
         result = self.backend._list("test_export")
-        self.assertEqual(result, ["foo.txt"])
-
-    @mute_logger("odoo.addons.attachment_queue.models.attachment_queue")
-    def test_failing_export(self):
-        with mock.patch.object(
-            type(self.backend),
-            "_add_b64_data",
-            side_effect=raising_side_effect,
-        ):
-            self.attachment.run()
-        self.assertEqual(self.attachment.state, "failed")
-        self.assertEqual(self.attachment.state_message, "Boom")
+        self.assertIn(result[0], ["Users_list___M2M"])
+        self.assertIn(result[0], [".xlsx"])
+        excel_raw = self.backend._get_bin_data("test_export/" + result[0])
+        openpyxl.load_workbook(excel_raw)
+        expected_vals = [
+            [str(self.env.ref("base.user_admin").id), "Mitchell Admin"],
+            [str(self.env.ref("base.user_demo").id), "Marc Demo"],
+        ]
+        self._helper_check_cell_values(expected_vals)

@@ -3,40 +3,15 @@
 
 import mock
 import os
-from odoo.addons.storage_backend.tests.common import Common
+from odoo.addons.attachment_synchronize.tests.common import SyncCommon
 
 
-class SyncCommon(Common):
-    def _clean_testing_directory(self):
-        for test_dir in [
-            self.directory_input,
-            self.directory_output,
-            self.directory_archived,
-        ]:
-            for filename in self.backend._list(test_dir):
-                self.backend._delete(os.path.join(test_dir, filename))
-
-    def _create_test_file(self):
-        self.backend._add_b64_data(
-            os.path.join(self.directory_input, "bar.txt"),
-            self.filedata,
-            mimetype=u"text/plain",
-        )
-
+class SyncPattimpexCommon(SyncCommon):
     def setUp(self):
         super().setUp()
-        self.env.cr.commit = mock.Mock()
-        self.registry.enter_test_mode(self.env.cr)
-        self.directory_input = "test_import"
-        self.directory_output = "test_export"
-        self.directory_archived = "test_archived"
-        self._clean_testing_directory()
-        self._create_test_file()
-        self.task = self.env.ref(
-            "attachment_synchronize.import_from_filestore"
+        self.task_import = self.env.ref(
+            "attachment_synchronize_pattimpex.export_to_filestore_pattimpex"
         )
-
-    def tearDown(self):
-        self.registry.leave_test_mode()
-        self._clean_testing_directory()
-        super().tearDown()
+        self.task_export = self.env.ref(
+            "attachment_synchronize_pattimpex.import_from_filestore_pattimpex"
+        )

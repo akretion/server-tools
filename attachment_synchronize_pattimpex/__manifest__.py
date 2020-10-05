@@ -9,9 +9,7 @@
     "maintainers": ["kevinkhao", "sebastienbeau"],
     "license": "AGPL-3",
     "category": "Generic Modules",
-    "depends": [
-        "attachment_synchronize",
-    ],
+    "depends": ["attachment_synchronize", "pattern_import_export_xlsx"],
     "data": [
         # "views/attachment_queue_views.xml",
         # "views/attachment_synchronize_task_views.xml",
@@ -19,7 +17,7 @@
         # "data/cron.xml",
         # "security/ir.model.access.csv",
     ],
-    # "demo": ["demo/attachment_synchronize_task_demo.xml"],
+    "demo": ["demo/demo.xml"],
     # "installable": True,
     # "development_status": "Beta",
 }

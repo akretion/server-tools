@@ -3,34 +3,35 @@
 import datetime
 import logging
 import os
-
+import json
 import odoo
 from odoo import api, fields, models, tools
 from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
-def make_safe_filename(s):
-    def safe_char(c):
-        if c.isalnum():
-            return c
-        else:
-            return "_"
-    return "".join(safe_char(c) for c in s).rstrip("_")
+from .common import make_safe_filename
 
 
 class AttachmentSynchronizeTask(models.Model):
     _inherit = "attachment.synchronize.task"
 
-    method_type = fields.Selection(selection_add=[("import_pattimpex", "Import Task (using patterns)"), ("export_pattimpex", "Export Task (using patterns)")]
+    pattern_pattimpex = fields.Char(
+        string="Selection Pattern", compute="_compute_pattern_pattimpex"
     )
-    pattern_pattimpex = fields.Char(string="Selection Pattern", compute="_compute_pattern_pattimpex")
-    export_id = fields.Many2one("ir.exports")
+    domain_pattimpex_export = fields.Char(
+        string="Domain for filtering records to export", default="[]"
+    )
+    export_id = fields.Many2one("ir.exports", string="Export pattern")
 
     def _compute_pattern_pattimpex(self):
         for rec in self:
             if rec.export_id:
-                rec.pattern_pattimpex = make_safe_filename(rec.export_id.name) + "*." + rec.export_id.export_format
+                rec.pattern_pattimpex = (
+                    make_safe_filename(rec.export_id.name)
+                    + "*."
+                    + rec.export_id.export_format
+                )
 
     @api.model
     def run_task_import_using_patterns_scheduler(self, domain=None):
@@ -52,14 +53,16 @@ class AttachmentSynchronizeTask(models.Model):
         """
         Similar copy of run_import, except :
         - uses self.pattern_pattimpex instead of self.pattern
-        - on the resulting attachment.queues, runs pattern_import_export import
-          functionality
+        - on the resulting attachment.queues, runs import_using_pattern()
+          which launches the pattern-import-export flow
         """
         self.ensure_one()
         attach_obj = self.env["attachment.queue"]
         backend = self.backend_id
         filepath = self.filepath or ""
-        filenames = backend._list(relative_path=filepath, pattern=self.pattern_pattimpex)
+        filenames = backend._list(
+            relative_path=filepath, pattern=self.pattern_pattimpex
+        )
         if self.avoid_duplicated_files:
             filenames = self._file_to_import(filenames)
         total_import = 0
@@ -71,7 +74,9 @@ class AttachmentSynchronizeTask(models.Model):
                     try:
                         full_absolute_path = os.path.join(filepath, file_name)
                         data = backend._get_b64_data(full_absolute_path)
-                        attach_vals = self._prepare_attachment_vals(data, file_name, self.export_id.id)
+                        attach_vals = self._prepare_attachment_vals(
+                            data, file_name, self.export_id.id
+                        )
                         attachment = attach_obj.with_env(new_env).create(attach_vals)
                         new_full_path = False
                         if self.after_import == "rename":
@@ -99,161 +104,22 @@ class AttachmentSynchronizeTask(models.Model):
                     else:
                         new_env.cr.commit()
                         attachment.import_using_pattern()
-        _logger.info("Run patterned import complete! Imported {0} files".format(total_import))
+        _logger.info(
+            "Run patterned import complete! Imported {0} files".format(total_import)
+        )
 
-
-
-    # pattern = fields.Char(
-    #     string="Selection Pattern",
-    #     help="Pattern used to select the files to be imported following the 'fnmatch' "
-    #     "special characters (e.g. '*.txt' to catch all the text files).\n"
-    #     "If empty, import all the files found in 'File Path'.",
-    # )
-    # filepath = fields.Char(
-    #     string="File Path", help="Path to imported/exported files in the Backend"
-    # )
-    # backend_id = fields.Many2one("storage.backend", string="Backend")
-    # attachment_ids = fields.One2many("attachment.queue", "task_id", string="Attachment")
-    # move_path = fields.Char(
-    #     string="Move Path", help="Imported File will be moved to this path"
-    # )
-    # new_name = fields.Char(
-    #     string="New Name",
-    #     help="Imported File will be renamed to this name.\n"
-    #     "New Name can use 'mako' template where 'obj' is the original file's name.\n"
-    #     "For instance : ${obj.name}-${obj.create_date}.csv",
-    # )
-    # after_import = fields.Selection(
-    #     selection=[
-    #         ("rename", "Rename"),
-    #         ("move", "Move"),
-    #         ("move_rename", "Move & Rename"),
-    #         ("delete", "Delete"),
-    #     ],
-    #     help="Action after import a file",
-    # )
-    # file_type = fields.Selection(
-    #     selection=[],
-    #     string="File Type",
-    #     help="Used to fill the 'File Type' field in the imported 'Attachments Queues'."
-    #     "\nFurther operations will be realized on these Attachments Queues depending "
-    #     "on their 'File Type' value.",
-    # )
-    # enabled = fields.Boolean("Enabled", default=True)
-    # avoid_duplicated_files = fields.Boolean(
-    #     string="Avoid importing duplicated files",
-    #     help="If checked, a file will not be imported if an Attachment Queue with the "
-    #     "same name already exists.",
-    # )
-    # failure_emails = fields.Char(
-    #     string="Failure Emails",
-    #     help="Used to fill the 'Failure Emails' field in the 'Attachments Queues' "
-    #     "related to this task.\nAn alert will be sent to these emails if any operation "
-    #     "on these Attachment Queue's file type fails.",
-    # )
-
-    # def _prepare_attachment_vals(self, data, filename):
-    #     self.ensure_one()
-    #     vals = {
-    #         "name": filename,
-    #         "datas": data,
-    #         "datas_fname": filename,
-    #         "task_id": self.id,
-    #         "file_type": self.file_type or False,
-    #     }
-    #     return vals
-    #
-    # @api.model
-    # def _template_render(self, template, record):
-    #     try:
-    #         template = mako_template_env.from_string(tools.ustr(template))
-    #     except Exception:
-    #         _logger.exception("Failed to load template '{}'".format(template))
-    #
-    #     variables = {"obj": record}
-    #     try:
-    #         render_result = template.render(variables)
-    #     except Exception:
-    #         _logger.exception(
-    #             "Failed to render template '{}'' using values '{}'".format(
-    #                 template, variables
-    #             )
-    #         )
-    #         render_result = u""
-    #     if render_result == u"False":
-    #         render_result = u""
-    #     return render_result
-    #
-    # @api.model
-    # def run_task_import_scheduler(self, domain=None):
-    #     if domain is None:
-    #         domain = []
-    #     domain = expression.AND(
-    #         [domain, [("method_type", "=", "import"), ("enabled", "=", True)]]
-    #     )
-    #     for task in self.search(domain):
-    #         task.run_import()
-    #
-    # def run_import(self):
-    #     self.ensure_one()
-    #     attach_obj = self.env["attachment.queue"]
-    #     backend = self.backend_id
-    #     filepath = self.filepath or ""
-    #     filenames = backend._list(relative_path=filepath, pattern=self.pattern)
-    #     if self.avoid_duplicated_files:
-    #         filenames = self._file_to_import(filenames)
-    #     total_import = 0
-    #     for file_name in filenames:
-    #         with api.Environment.manage():
-    #             with odoo.registry(self.env.cr.dbname).cursor() as new_cr:
-    #                 new_env = api.Environment(new_cr, self.env.uid, self.env.context)
-    #                 try:
-    #                     full_absolute_path = os.path.join(filepath, file_name)
-    #                     data = backend._get_b64_data(full_absolute_path)
-    #                     attach_vals = self._prepare_attachment_vals(data, file_name)
-    #                     attachment = attach_obj.with_env(new_env).create(attach_vals)
-    #                     new_full_path = False
-    #                     if self.after_import == "rename":
-    #                         new_name = self._template_render(self.new_name, attachment)
-    #                         new_full_path = os.path.join(filepath, new_name)
-    #                     elif self.after_import == "move":
-    #                         new_full_path = os.path.join(self.move_path, file_name)
-    #                     elif self.after_import == "move_rename":
-    #                         new_name = self._template_render(self.new_name, attachment)
-    #                         new_full_path = os.path.join(self.move_path, new_name)
-    #                     if new_full_path:
-    #                         backend._add_b64_data(new_full_path, data)
-    #                     if self.after_import in (
-    #                         "delete",
-    #                         "rename",
-    #                         "move",
-    #                         "move_rename",
-    #                     ):
-    #                         backend._delete(full_absolute_path)
-    #                     total_import += 1
-    #                 except Exception as e:
-    #                     new_env.cr.rollback()
-    #                     raise e
-    #                 else:
-    #                     new_env.cr.commit()
-    #     _logger.info("Run import complete! Imported {0} files".format(total_import))
-    #
-    # def _file_to_import(self, filenames):
-    #     imported = (
-    #         self.env["attachment.queue"]
-    #         .search([("name", "in", filenames)])
-    #         .mapped("name")
-    #     )
-    #     return list(set(filenames) - set(imported))
-    #
-    # def run_export(self):
-    #     for task in self:
-    #         task.attachment_ids.filtered(lambda a: a.state == "pending").run()
-    #
-    # def button_toogle_enabled(self):
-    #     for rec in self:
-    #         rec.enabled = not rec.enabled
-    #
-    # def button_duplicate_record(self):
-    #     self.ensure_one()
-    #     self.copy({"enabled": False})
+    def run_export_pattimpex(self):
+        for task in self.filtered(lambda r: r.export_id):
+            new_ctx = {
+                "active_ids": self.env[task.export_id.model].search(
+                    json.loads(task.domain_pattimpex_export)
+                )
+            }
+            wizard = self.env["export.pattern.wizard"].create(
+                {"model": self.export_id.model.id, "ir_exports_id": self.export_id.id,}
+            )
+            pattimpex = wizard.with_context(new_ctx).action_launch_export()
+            self.env["attachment.queue"].create(
+                {"attachment_id": pattimpex.attachment_id.id, "file_type": "export"}
+            )
+            task.attachment_ids.filtered(lambda a: a.state == "pending").run()

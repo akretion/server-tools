@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="import_from_filestore_pattimpex" model="attachment.synchronize.task">
+        <field name="name">Import from filestore with pattern</field>
+        <field name="backend_id" ref="storage_backend.default_storage_backend"/>
+        <field name="method_type">import</field>
+        <field name="filepath">test_import_pattimpex</field>
+        <field name="export_id" ref="pattern_import_export.demo_export_m2m"/>
+    </record>
+
+    <record id="export_to_filestore_pattimpex" model="attachment.synchronize.task">
+        <field name="name">Export to filestore with pattern</field>
+        <field name="backend_id" ref="storage_backend.default_storage_backend"/>
+        <field name="method_type">export</field>
+        <field name="filepath">test_export_pattimpex</field>
+        <field name="export_id" ref="pattern_import_export.demo_export_m2m"/>
+        <field name="domain_pattimpex_export">[('name', 'ilike', 'mitch')]</field>
+    </record>
+
+<!--    <record id="demo_export_m2m" model="ir.exports">-->
+<!--        <field name="name">Users list - M2M</field>-->
+<!--        <field name="is_pattern" eval="True"/>-->
+<!--        <field name="resource">res.users</field>-->
+<!--    </record>-->
+
+</odoo>
