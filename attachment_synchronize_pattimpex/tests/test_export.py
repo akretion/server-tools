@@ -6,7 +6,7 @@ import openpyxl
 from odoo.addons.pattern_import_export_xlsx.tests.test_pattern_export import (
     TestPatternExportExcel,
 )
-from .common import SyncPattimpexCommon
+from .common import SyncPattimpexCommon, PATTIMPEX_NAME
 
 
 class TestExport(SyncPattimpexCommon, TestPatternExportExcel):
@@ -21,7 +21,7 @@ class TestExport(SyncPattimpexCommon, TestPatternExportExcel):
         """
         self.task_export.run_export_pattimpex()
         result = self.backend._list("test_export")
-        self.assertIn(result[0], ["Users_list___M2M"])
+        self.assertIn(result[0], [PATTIMPEX_NAME])
         self.assertIn(result[0], [".xlsx"])
         excel_raw = self.backend._get_bin_data("test_export/" + result[0])
         openpyxl.load_workbook(excel_raw)
