@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="cron_vacuum_mail_auto_deletes" model="ir.cron">
+            <field name='name'>Vacuum emails flagged auto_delete</field>
+            <field name='interval_number'>3</field>
+            <field name='interval_type'>weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="model_id" ref="mail.model_mail_mail" />
+            <field name="state">code</field>
+            <field name="code">model.vacuum_auto_deletes()</field>
+        </record>
+    </data>
+</odoo>
