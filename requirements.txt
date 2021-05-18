@@ -8,6 +8,7 @@ lxml
 odoorpc
 openpyxl
 openupgradelib
+pygount
 pysftp
 pyyaml
 raven
