@@ -7,5 +7,6 @@ josepy
 odoorpc
 openupgradelib
 pygount
+pyyaml
 raven
 unidecode
