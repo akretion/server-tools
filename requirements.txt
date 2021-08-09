@@ -4,9 +4,14 @@ cryptography
 dataclasses
 dnspython
 josepy
+lxml
 odoorpc
+openpyxl
 openupgradelib
 pygount
+pysftp
 pyyaml
 raven
 unidecode
+xlrd
+xlwt
