@@ -61,19 +61,6 @@ class IrModuleModule(models.Model):
         }
 
     @api.model
-    def _get_clean_analyse_values(self):
-        """List of fields to unset when a module is uninstalled"""
-        return {
-            "author_ids": [(6, 0, [])],
-            "module_type_id": False,
-            "python_code_qty": False,
-            "xml_code_qty": 0,
-            "js_code_qty": 0,
-            "css_code_qty": 0,
-            "scss_code_qty": 0,
-        }
-
-    @api.model
     def _get_module_encoding(self, file_ext):
         return "utf-8"
 
@@ -81,16 +68,8 @@ class IrModuleModule(models.Model):
     @api.model
     def update_list(self):
         res = super().update_list()
-        if self.env.context.get("analyse_installed_modules", False):
-            self.search([("state", "=", "installed")])._analyse_code()
-        return res
-
-    def write(self, vals):
-        res = super().write(vals)
-        if vals.get("state", False) == "uninstalled" and "module_analysis" not in [
-            x.name for x in self
-        ]:
-            self.write(self._get_clean_analyse_values())
+        if self.env.context.get("analyse_all_modules", False):
+            self.search([])._analyse_code()
         return res
 
     # Public Section
@@ -99,7 +78,7 @@ class IrModuleModule(models.Model):
 
     @api.model
     def cron_analyse_code(self):
-        self.search([("state", "=", "installed")])._analyse_code()
+        self.search([])._analyse_code()
 
     # Custom Section
     def _analyse_code(self):

@@ -11,15 +11,21 @@ class IrModuleAuthor(models.Model):
 
     name = fields.Char(string="Name", required=True)
 
-    installed_module_ids = fields.Many2many(
+    module_ids = fields.Many2many(
         string="Modules",
         comodel_name="ir.module.module",
         relation="ir_module_module_author_rel",
     )
 
+    module_qty = fields.Integer(
+        string="Modules Quantity",
+        compute="_compute_module_qty",
+        store=True,
+    )
+
     installed_module_qty = fields.Integer(
         string="Installed Modules Quantity",
-        compute="_compute_installed_module_qty",
+        compute="_compute_module_qty",
         store=True,
     )
 
@@ -31,10 +37,13 @@ class IrModuleAuthor(models.Model):
         ),
     ]
 
-    @api.depends("installed_module_ids")
-    def _compute_installed_module_qty(self):
+    @api.depends("module_ids")
+    def _compute_module_qty(self):
         for author in self:
-            author.installed_module_qty = len(author.installed_module_ids)
+            author.module_qty = len(author.module_ids)
+            author.installed_module_qty = len(
+                author.module_ids.filtered(lambda l: l.state == "installed")
+            )
 
     @api.model
     def _get_or_create(self, name):

@@ -8,12 +8,12 @@ from odoo import fields, models
 class BaseModuleUpdate(models.TransientModel):
     _inherit = "base.module.update"
 
-    analyse_installed_modules = fields.Boolean(
+    analyse_all_modules = fields.Boolean(
         string="Analyse Installed Modules", default=True
     )
 
     def update_module(self):
         return super(
             BaseModuleUpdate,
-            self.with_context(analyse_installed_modules=self.analyse_installed_modules),
+            self.with_context(analyse_all_modules=self.analyse_all_modules),
         ).update_module()

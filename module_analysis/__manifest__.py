@@ -25,6 +25,6 @@
         "data/ir_module_type_rule.xml",
     ],
     "external_dependencies": {"python": ["pygount"]},
-    "post_init_hook": "analyse_installed_modules",
+    "post_init_hook": "analyse_all_modules",
     "installable": True,
 }
