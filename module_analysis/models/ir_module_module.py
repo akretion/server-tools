@@ -84,7 +84,7 @@ class IrModuleModule(models.Model):
     def _analyse_code(self):
         IrModuleAuthor = self.env["ir.module.author"]
         IrModuleTypeRule = self.env["ir.module.type.rule"]
-        rules = IrModuleTypeRule.search([])
+        rules = IrModuleTypeRule.search([], order="sequence")
 
         cfg = self.env["ir.config_parameter"]
         val = cfg.get_param("module_analysis.exclude_directories", "")
@@ -111,7 +111,7 @@ class IrModuleModule(models.Model):
             module.author_ids = author_ids
 
             # Update Module Type, based on rules
-            module_type_id = rules._get_module_type_id_from_module(module)
+            module_type_id = rules._get_type_from_module(module).id
             module.module_type_id = module_type_id
 
             # Get Path of module folder and parse the code

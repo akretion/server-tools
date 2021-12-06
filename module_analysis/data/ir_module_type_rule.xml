@@ -28,10 +28,18 @@ License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
     </record>
     <!-- OCA Rules -->
     <record id="module_type_rule_oca_a" model="ir.module.type.rule">
-        <field name="sequence">100</field>
+        <field name="sequence">20</field>
         <field
             name="module_domain"
         >[('author_ids', '=', 'Odoo Community Association (OCA)')]</field>
         <field name="module_type_id" ref="module_type_oca" />
+    </record>
+
+    <record id="module_type_rule_unknown" model="ir.module.type.rule">
+        <field name="sequence">100</field>
+        <field
+            name="module_domain"
+        >[]</field>
+        <field name="module_type_id" ref="module_type_unknown" />
     </record>
 </odoo>

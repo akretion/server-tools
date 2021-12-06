@@ -19,11 +19,14 @@ class IrModuleType(models.Model):
         string="Module type", comodel_name="ir.module.type", required=True
     )
 
-    def _get_module_type_id_from_module(self, module):
-        IrModuleModule = self.env["ir.module.module"]
-        for rule in self:
-            domain = safe_eval(rule.module_domain)
-            domain.append(("id", "=", module.id))
-            if IrModuleModule.search(domain):
-                return rule.module_type_id.id
+    def _module_is_in_rule(self, module):
+        self.ensure_one()
+        domain = safe_eval(self.module_domain)
+        if module.filtered_domain(domain):
+            return True
         return False
+
+    def _get_type_from_module(self, module):
+        for rule in self.sorted("sequence"):
+            if rule._module_is_in_rule(module):
+                return rule.module_type_id
