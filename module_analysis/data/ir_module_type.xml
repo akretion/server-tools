@@ -7,11 +7,11 @@ License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 <odoo>
     <record id="module_type_odoo" model="ir.module.type">
         <field name="name">Odoo Core</field>
-        <field name="sequence">1</field>
+        <field name="sequence">10</field>
     </record>
     <record id="module_type_oca" model="ir.module.type">
         <field name="name">Odoo Community Association (OCA)</field>
-        <field name="sequence">2</field>
+        <field name="sequence">20</field>
     </record>
     <record id="module_type_unknown" model="ir.module.type">
         <field name="name">Unknown</field>
