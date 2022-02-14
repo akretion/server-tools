@@ -1,3 +1,4 @@
-from . import attachment_queue
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html)
 from . import account_move
-from . import account_statement
+from . import account_bank_statement
+from . import attachment_queue
