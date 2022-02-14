@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+        <record id="attachment_synchronize_tak_form_view" model="ir.ui.view">
+            <field name="model">attachment.synchronize.task</field>
+            <field
+            name="inherit_id"
+            ref="attachment_synchronize.view_attachment_task_form"
+        />
+            <field name="arch" type="xml">
+                <data>
+                    <field name="file_type" position="after">
+                        <field
+                        name="journal_id"
+                        attrs="{'invisible':[('file_type', 'not in', ('account_move_import',))],
+                                       'required':[('file_type', 'in', ('account_move_import',))]}"
+                    />
+                    </field>
+                </data>
+            </field>
+        </record>
+
+</odoo>
