@@ -27,6 +27,6 @@
         "data/ir_cron.xml",
     ],
     "external_dependencies": {"python": ["pygount"]},
-    "post_init_hook": "analyse_installed_modules",
+    # "post_init_hook": "analyse_installed_modules",
     "installable": True,
 }

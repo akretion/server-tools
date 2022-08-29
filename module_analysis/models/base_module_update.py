@@ -12,8 +12,9 @@ class BaseModuleUpdate(models.TransientModel):
         string="Analyse Installed Modules", default=True
     )
 
-    def update_module(self):
-        return super(
-            BaseModuleUpdate,
-            self.with_context(analyse_installed_modules=self.analyse_installed_modules),
-        ).update_module()
+
+#    def update_module(self):
+#        return super(
+#            BaseModuleUpdate,
+#            self.with_context(analyse_installed_modules=self.analyse_installed_modules),
+#        ).update_module()
