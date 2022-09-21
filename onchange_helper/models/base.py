@@ -25,7 +25,7 @@ class Base(models.AbstractModel):
             return False
         elif field._related_comodel_name:
             return self.env["ir.model.access"].check(
-                field._related_comodel_name, "write", raise_exception=False
+                field._related_comodel_name, "read", raise_exception=False
             )
         elif field.groups:
             return self.user_has_groups(field.groups)
