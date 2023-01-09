@@ -124,6 +124,11 @@ def get_sentry_options():
             to_float_if_defined,
         ),
         SentryOption(
+            "profiles_sample_rate",
+            DEFAULT_OPTIONS["_experiments"].get("profiles_sample_rate"),
+            to_float_if_defined,
+        ),
+        SentryOption(
             "auto_enabling_integrations",
             DEFAULT_OPTIONS["auto_enabling_integrations"],
             None,

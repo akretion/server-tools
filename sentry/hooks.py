@@ -160,6 +160,12 @@ def initialize_sentry(config):
         # should be never send and the method traces_sampler can drop them
         options["traces_sampler"] = Sampler(sampler_params).traces_sampler
 
+    if options["profiles_sample_rate"]:
+        profiles_sample_rate = options.pop("profiles_sample_rate")
+        # feature avaiable from 1.11.0 as an experiment
+        options.setdefault("_experiments", {})
+        options["_experiments"]["profiles_sample_rate"] = profiles_sample_rate
+
     client = sentry_sdk.init(**options)
 
     sentry_sdk.set_tag("include_context", config.get("sentry_include_context", True))

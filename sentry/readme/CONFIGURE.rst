@@ -85,6 +85,12 @@ it's recommended to define all specific tracing rate
 in this case you do not need to define a global rate
 as all case have a specific rate.
 
+Performance tracing can be set::
+
+    sentry_profiles_sample_rate=1
+
+For the moment, unlike trace sampling, profile sampling
+is a global setting.
 
 Example Odoo configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

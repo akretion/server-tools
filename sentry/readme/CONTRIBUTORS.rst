@@ -3,3 +3,4 @@
 * Naglis Jonaitis <naglis@versada.eu>
 * Atte Isopuro <atte.isopuro@avoin.systems>
 * Florian Mounier <florian.mounier@akretion.com>
+* Raphaël Reverdy <raphael.reverdy@akretion.com>
