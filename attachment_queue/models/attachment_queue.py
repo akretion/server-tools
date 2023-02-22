@@ -112,14 +112,13 @@ class AttachmentQueue(models.Model):
                 ).send_mail(self.id)
             return False
         else:
-            self.write(
+            return self.write(
                 {
                     "state": "done",
                     "date_done": fields.Datetime.now(),
                     "running_lock": False,
                 }
             )
-            return True
 
     def _run(self):
         self.ensure_one()

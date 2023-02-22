@@ -1,4 +1,4 @@
-* Valentin CHEMIERE <valentin.chemiere@akretion.com>
+* Valentin CHEMIERE
 * Florian da Costa <florian.dacosta@akretion.com>
 * Angel Moya <http://angelmoya.es>
 * Dan Kiplangat <dan@sunflowerweb.nl>
