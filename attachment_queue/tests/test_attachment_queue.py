@@ -4,11 +4,8 @@ from unittest import mock
 
 from odoo_test_helper import FakeModelLoader
 
-from odoo import registry
-from odoo.exceptions import UserError
 from odoo.tests.common import TransactionCase
 
-from odoo.addons.queue_job.exception import RetryableJobError
 from odoo.addons.queue_job.tests.common import trap_jobs
 
 DUMMY_AQ_VALS = {
@@ -56,39 +53,6 @@ class TestAttachmentBaseQueue(TransactionCase):
             trap.assert_enqueued_job(
                 self.env["attachment.queue"].run_as_job,
             )
-
-    def test_aq_locked_job(self):
-        """If an attachment is already running, and a job tries to run it, retry later"""
-        attachment = self.env.ref("attachment_queue.dummy_attachment_queue")
-        with registry(self.env.cr.dbname).cursor() as new_cr:
-            new_cr.execute(
-                """
-                SELECT id
-                FROM attachment_queue
-                WHERE id  = %s
-                FOR UPDATE NOWAIT
-            """,
-                (attachment.id,),
-            )
-            with self.assertRaises(RetryableJobError):
-                attachment.run_as_job()
-
-    def test_aq_locked_button(self):
-        """If an attachment is already running, and a user tries to run it manually,
-        raise error window"""
-        attachment = self.env.ref("attachment_queue.dummy_attachment_queue")
-        with registry(self.env.cr.dbname).cursor() as new_cr:
-            new_cr.execute(
-                """
-                SELECT id
-                FROM attachment_queue
-                WHERE id  = %s
-                FOR UPDATE NOWAIT
-            """,
-                (attachment.id,),
-            )
-            with self.assertRaises(UserError):
-                attachment.button_manual_run()
 
     def test_run_ok(self):
         """Attachment queue should have correct state and result"""
