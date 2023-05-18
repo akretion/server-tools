@@ -173,6 +173,10 @@ class IrModuleModule(models.Model):
                 if name in exclude_files:
                     continue
                 filename, file_extension = os.path.splitext(name)
+                _logger.info(
+                    "full_name : %s, filename %s, extension : %s"
+                    % (name, filename, file_extension)
+                )
                 if file_extension in file_extensions:
                     res.append((os.path.join(root, name), file_extension))
         return res
