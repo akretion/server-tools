@@ -139,7 +139,10 @@ class IrModuleModule(models.Model):
             file_list = self._get_files_to_analyse(
                 module_path, file_extensions, exclude_directories, exclude_files
             )
-            _logger.info("file_list %s, file_extensions %s, analysed_datas %s" % (file_list, file_extensions, analysed_datas))
+            _logger.info(
+                "file_list %s, file_extensions %s, analysed_datas %s"
+                % (file_list, file_extensions, analysed_datas)
+            )
 
             for file_path, file_ext in file_list:
                 file_res = SourceAnalysis.from_file(
@@ -163,6 +166,7 @@ class IrModuleModule(models.Model):
         if not path:
             return res
         for root, _, files in os.walk(path, followlinks=True):
+            _logger.info("root : %s, files %s" % (root, files))
             if set(Path(root).parts) & set(exclude_directories):
                 continue
             for name in files:
