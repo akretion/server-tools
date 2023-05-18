@@ -166,11 +166,17 @@ class IrModuleModule(models.Model):
         if not path:
             return res
         for root, _, files in os.walk(path, followlinks=True):
-            _logger.info("root : %s, files %s" % (root, files))
+            _logger.info(
+                "root : %s, files %s, exclude %s" % (root, files, exclude_directories)
+            )
             if set(Path(root).parts) & set(exclude_directories):
+                _logger.info("continue")
                 continue
             for name in files:
                 if name in exclude_files:
+                    _logger.info(
+                        "continue, file %s, exclude_files : %s" % (name, exclude_files)
+                    )
                     continue
                 filename, file_extension = os.path.splitext(name)
                 _logger.info(
