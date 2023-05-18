@@ -131,6 +131,7 @@ class IrModuleModule(models.Model):
 
             # Get Path of module folder and parse the code
             module_path = get_module_path(module.name)
+            _logger.info("module_path %s ..." % (module_path))
 
             # Get Files
             analysed_datas = self._get_analyse_data_dict()
@@ -138,6 +139,7 @@ class IrModuleModule(models.Model):
             file_list = self._get_files_to_analyse(
                 module_path, file_extensions, exclude_directories, exclude_files
             )
+            _logger.info("file_list %s, file_extensions %s, analysed_datas %s" % (file_list, file_extensions, analysed_datas))
 
             for file_path, file_ext in file_list:
                 file_res = SourceAnalysis.from_file(
