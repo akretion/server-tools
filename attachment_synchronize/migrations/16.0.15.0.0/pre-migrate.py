@@ -16,3 +16,10 @@ def migrate(cr, version):
     cr.execute(
         "ALTER TABLE attachment_synchronize_task RENAME COLUMN backend_id TO old_storage_id"
     )
+    # custom fields
+    cr.execute(
+        "ALTER TABLE delivery_carrier_agency DROP CONSTRAINT delivery_carrier_agency_storage_geodis_id_fkey;"
+    )
+    cr.execute(
+        "ALTER TABLE edi_transport_config DROP CONSTRAINT edi_transport_config_edi_storage_backend_id_fkey;"
+    )

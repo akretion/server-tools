@@ -53,3 +53,24 @@ def migrate(cr, version):
         env["attachment.synchronize.task"].browse(task_id).write(
             {"backend_id": old2new[old_storage_id]}
         )
+
+    # custom fields
+    cr.execute("SELECT id, storage_geodis_id FROM delivery_carrier_agency")
+    for agency_id, old_storage_id in cr.fetchall():
+        if not old_storage_id:
+            continue
+        new_id = old2new[old_storage_id]
+        cr.execute(
+            "UPDATE delivery_carrier_agency SET storage_geodis_id = %s WHERE id = %s",
+            (new_id, agency_id),
+        )
+
+    cr.execute("SELECT id, edi_storage_backend_id FROM edi_transport_config")
+    for config_id, old_storage_id in cr.fetchall():
+        if not old_storage_id:
+            continue
+        new_id = old2new[old_storage_id]
+        cr.execute(
+            "UPDATE edi_transport_config SET edi_storage_backend_id = %s WHERE id = %s",
+            (new_id, config_id),
+        )
