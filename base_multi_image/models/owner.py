@@ -10,7 +10,7 @@ class Owner(models.AbstractModel):
     _name = "base_multi_image.owner"
     _description = """ Wizard for base multi image """
 
-    image_ids = fields.One2many(
+    prestashop_image_ids = fields.One2many(
         comodel_name="base_multi_image.image",
         inverse_name="owner_id",
         string="Images",
@@ -36,7 +36,7 @@ class Owner(models.AbstractModel):
         store=False,
     )
 
-    @api.depends("image_ids")
+    @api.depends("prestashop_image_ids")
     def _compute_multi_image(self):
         """Get the main image for this object.
 
@@ -44,7 +44,7 @@ class Owner(models.AbstractModel):
         had one image per record.
         """
         for s in self:
-            first = s.image_ids[:1]
+            first = s.prestashop_image_ids[:1]
             s.image_main = first.image_main
             s.image_main_medium = first.image_medium
             s.image_main_small = first.image_small
@@ -68,15 +68,15 @@ class Owner(models.AbstractModel):
             if image:
                 values["owner_id"] = s.id
                 # Editing
-                if s.image_ids:
-                    s.image_ids[0].write(values)
+                if s.prestashop_image_ids:
+                    s.prestashop_image_ids[0].write(values)
                 # Adding
                 else:
                     values.setdefault("name", name or _("Main image"))
-                    s.image_ids = [(0, 0, values)]
+                    s.prestashop_image_ids = [(0, 0, values)]
             # Deleting
-            elif s.image_ids:
-                s.image_ids[0].unlink()
+            elif s.prestashop_image_ids:
+                s.prestashop_image_ids[0].unlink()
 
     def _inverse_multi_image_main(self):
         self._set_multi_image(self.image_main)
@@ -92,7 +92,7 @@ class Owner(models.AbstractModel):
 
         Will be skipped if ``env.context['bypass_image_removal']`` == True
         """
-        images = self.mapped("image_ids")
+        images = self.mapped("prestashop_image_ids")
         result = super().unlink()
         if result and not self.env.context.get("bypass_image_removal"):
             images.unlink()
