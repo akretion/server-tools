@@ -9,6 +9,9 @@ mako
 odoo_test_helper
 odoorpc
 openpyxl
+opentelemetry-api
+opentelemetry-instrumentation-wsgi
+opentelemetry-sdk
 openupgradelib
 pygount
 pysftp
