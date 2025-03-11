@@ -59,8 +59,16 @@ def WebRequest_init(self, httprequest):
 
 http.WebRequest.__init__ = WebRequest_init
 
+RootClass = http.Root
 
-_original_get_response = http.root.__class__.get_response
+# Hack for some module patches
+if not hasattr(RootClass, "get_request"):
+    if hasattr(RootClass, "app"):
+        RootClass = RootClass.app
+    elif hasattr(RootClass, "wsgi"):
+        RootClass = RootClass.wsgi
+
+_original_get_response = RootClass.get_response
 
 
 def get_response(self, httprequest, result, explicit_session):
@@ -70,4 +78,4 @@ def get_response(self, httprequest, result, explicit_session):
     return response
 
 
-http.root.__class__.get_response = get_response
+RootClass.get_response = get_response
