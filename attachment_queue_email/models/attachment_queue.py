@@ -30,6 +30,7 @@ class AttachmentQueue(models.Model):
             "name": att.fname,
             "datas": base64.b64encode(att.content),
             "state": "pending",
+            "company_id": condition.company_id.id,
         }
         return values
 
@@ -37,9 +38,9 @@ class AttachmentQueue(models.Model):
     def prepare_data_from_basic_condition(self, cond, msg):
         vals_list = []
         # match_from and match_subj are True if empty or if matching with msg's values
-        match_from = str(cond.email_from) in msg.get("from", "") or not cond.email_from
+        match_from = cond.email_from in msg.get("from", "") or not cond.email_from
         match_subj = (
-            str(cond.email_subject) in msg.get("subject", "") or not cond.email_subject
+            cond.email_subject in msg.get("subject", "") or not cond.email_subject
         )
 
         if match_from and match_subj:
