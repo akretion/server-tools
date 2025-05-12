@@ -6,6 +6,7 @@ from odoo import fields, models
 class FetchmailAttachmentCondition(models.Model):
     _name = "fetchmail.attachment.condition"
     _description = "Fetchmail Attachment Conditions"
+    _check_company_auto = True
 
     def company_default_get(self):
         company_id = self.env["res.company"]._company_default_get("fetchmail.server")
@@ -20,6 +21,12 @@ class FetchmailAttachmentCondition(models.Model):
         help="If empty, catches the emails from every senders.\n"
         "Otherwise catches the emails where the sender's email contains the given "
         "characters",
+    )
+    email_to = fields.Char(
+        string="Email To",
+        help="If empty, catches the email no matter the recipient.\n"
+        "Otherwise catches the emails where the recipients emails contains the given "
+        "characters.",
     )
     email_subject = fields.Char(
         string="Email Subject",
