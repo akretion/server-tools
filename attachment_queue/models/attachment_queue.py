@@ -73,7 +73,9 @@ class AttachmentQueue(models.Model):
             with api.Environment.manage():
                 with registry(self.env.cr.dbname).cursor() as new_cr:
                     new_env = api.Environment(new_cr, SUPERUSER_ID, self.env.context)
-                    attach = attachment.with_env(new_env)
+                    attach = attachment.with_env(new_env).with_company(
+                        attachment.company_id
+                    )
                     try:
                         attach._run()
                     # pylint: disable=broad-except

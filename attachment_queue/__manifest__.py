@@ -14,6 +14,7 @@
     "data": [
         "views/attachment_queue_view.xml",
         "security/ir.model.access.csv",
+        "security/attachment_queue_security.xml",
         "data/cron.xml",
         "data/ir_config_parameter.xml",
         "data/mail_template.xml",
