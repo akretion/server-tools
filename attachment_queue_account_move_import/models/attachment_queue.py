@@ -9,14 +9,13 @@ class AttachmentQueue(models.Model):
     file_type = fields.Selection(
         selection_add=[
             ("account_move_import", "Account Move Import"),
-            ("account_statement_import", "Account Bank Statement Import"),
         ]
     )
-    journal_id = fields.Many2one("account.journal")
+    journal_id = fields.Many2one("account.journal", check_company=True)
 
     def _run(self):
         self.ensure_one()
-        super()._run()
+        res = super()._run()
         if self.file_type == "account_move_import":
             vals = {
                 "input_statement": self.datas,
@@ -29,11 +28,4 @@ class AttachmentQueue(models.Model):
             import_wizard.with_context(
                 default_attachement_queue_id=self.id
             ).import_statement()
-        elif self.file_type == "account_statement_import":
-            import_wizard_obj = self.env["account.statement.import"]
-            vals = {
-                "statement_file": self.datas,
-                "statement_filename": self.name,
-            }
-            import_wizard = import_wizard_obj.create(vals)
-            import_wizard.import_file_button()
+        return res
