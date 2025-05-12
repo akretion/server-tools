@@ -9,7 +9,6 @@ class FetchmailAttachmentCondition(models.Model):
     file_type = fields.Selection(
         selection_add=[
             ("account_move_import", "Account Move Import"),
-            ("account_statement_import", "Account Statement Import"),
         ]
     )
     journal_id = fields.Many2one("account.journal")
