@@ -11,4 +11,4 @@ class FetchmailAttachmentCondition(models.Model):
             ("account_move_import", "Account Move Import"),
         ]
     )
-    journal_id = fields.Many2one("account.journal")
+    journal_id = fields.Many2one("account.journal", check_company=True)

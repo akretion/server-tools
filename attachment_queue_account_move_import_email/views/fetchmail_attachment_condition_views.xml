@@ -11,7 +11,7 @@
             <field name="file_type" position="after">
                 <field
                     name="journal_id"
-                    attrs="{'required': [('file_type', 'in', ('account_move_import',))], 'invisible': [('file_type', 'not in', ('account_move_import',))]}"
+                    attrs="{'required': [('file_type', '=', 'account_move_import')], 'invisible': [('file_type', '!=', 'account_move_import')]}"
                 />
             </field>
         </field>
