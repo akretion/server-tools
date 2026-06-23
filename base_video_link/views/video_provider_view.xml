@@ -3,12 +3,12 @@
     <record id="video_provider_view_tree" model="ir.ui.view">
         <field name="model">video.provider</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="code" />
                 <field name="pattern_video_url" />
                 <field name="pattern_thumbnail_url" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -45,7 +45,7 @@
         <field name="name">Video Provider</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">video.provider</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="video_provider_view_search" />
     </record>
 </odoo>

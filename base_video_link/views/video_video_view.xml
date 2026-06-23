@@ -3,11 +3,11 @@
     <record id="video_video_view_tree" model="ir.ui.view">
         <field name="model">video.video</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="name" />
                 <field name="provider_id" />
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -40,7 +40,7 @@
                 <field name="url" />
                 <field name="thumbnail_url" />
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="o_kanban_image">
                                 <img
@@ -88,7 +88,7 @@
         <field name="name">Video</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">video.video</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="video_video_view_search" />
     </record>
 </odoo>
