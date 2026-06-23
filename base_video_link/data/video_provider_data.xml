@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-
     <record id="video_provider_youtube" model="video.provider">
         <field name="code">youtube</field>
         <field name="name">Youtube</field>
@@ -11,5 +10,4 @@
             name="pattern_thumbnail_url"
         >https://img.youtube.com/vi/{record.identifier}/0.jpg</field>
     </record>
-
 </odoo>
