@@ -112,12 +112,15 @@ class AbstractUrl(models.AbstractModel):
 
     def _get_main_url(self, referential, lang):
         self.ensure_one()
-        return self.url_ids.filtered(
-            lambda s: (
-                s.lang_id.code == lang
-                and s.referential == referential
-                and not s.redirect
-            )
+        # Search instead of using self.url_ids because url_ids is not always up to date
+        return self.env["url.url"].search(
+            [
+                ("lang_id.code", "=", lang),
+                ("referential", "=", referential),
+                ("redirect", "!=", True),
+                ("res_id", "=", self.id),
+                ("res_model", "=", self._name),
+            ]
         )
 
     @api.model
