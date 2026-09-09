@@ -6,6 +6,7 @@ from odoo.tools.sql import SQL
 
 
 def to_tsquery(text, lang):
+    text = text.replace("%", "")
     return SQL(
         "replace(websearch_to_tsquery(%(lang)s::regconfig, "
         "%(text)s)::text || ' ', ''' ', ''':*')::tsquery",
