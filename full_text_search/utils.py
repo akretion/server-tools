@@ -10,6 +10,7 @@ def to_tsquery(text, lang):
     text = QuotedString(text)
     text.encoding = "utf-8"
     text = pycompat.to_text(text.getquoted())
+    text = text.replace("%", "")
     return AsIs(
         "replace("
         f"websearch_to_tsquery({lang!r}::regconfig, "  # noqa:E231
